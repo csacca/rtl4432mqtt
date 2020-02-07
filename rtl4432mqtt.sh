@@ -161,6 +161,7 @@ PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin"
 
 CONFIG_PATH=/data/options.json
 MQTT_HOST="$(jq --raw-output '.mqtt_host' $CONFIG_PATH)"
+MQTT_PORT="$(jq --raw-output '.mqtt_port' $CONFIG_PATH)"
 MQTT_USER="$(jq --raw-output '.mqtt_user' $CONFIG_PATH)"
 MQTT_PASS="$(jq --raw-output '.mqtt_password' $CONFIG_PATH)"
 MQTT_TOPIC="$(jq --raw-output '.mqtt_topic' $CONFIG_PATH)"
@@ -168,21 +169,25 @@ PROTOCOL="$(jq --raw-output '.protocol' $CONFIG_PATH)"
 FREQUENCY="$(jq --raw-output '.frequency' $CONFIG_PATH)"
 GAIN="$(jq --raw-output '.gain' $CONFIG_PATH)"
 OFFSET="$(jq --raw-output '.frequency_offset' $CONFIG_PATH)"
+SERIAL="$(jq --raw-output '.rtl_serial' $CONFIG_PATH)"
 
 # Start the listener and enter an endless loop
 echo "Starting RTL_433 with parameters:"
 echo "MQTT Host =" $MQTT_HOST
+echo "MQTT Port =" $MQTT_PORT
 echo "MQTT User =" $MQTT_USER
 echo "MQTT Password =" $MQTT_PASS
 echo "MQTT Topic =" $MQTT_TOPIC
-echo "RTL_433 Protocol =" $PROTOCOL
+echo "RTL_433 Serial =" $SERIAL
 echo "RTL_433 Frequency =" $FREQUENCY
-echo "RTL_433 Gain =" $GAIN
-echo "RTL_433 Frequency Offset =" $OFFSET
+#echo "RTL_433 Protocol =" $PROTOCOL
+#echo "RTL_433 Gain =" $GAIN
+#echo "RTL_433 Frequency Offset =" $OFFSET
 
 #set -x  ## uncomment for MQTT logging...
 
-/usr/local/bin/rtl_433 -F json -R $PROTOCOL -f $FREQUENCY -g $GAIN -p $OFFSET | while read line
+#/usr/local/bin/rtl_433 -F json -R $PROTOCOL -f $FREQUENCY -g $GAIN -p $OFFSET | while read line
+/usr/local/bin/rtl_433 -F json -d :$SERIAL -f $FREQUENCY -C customary -M newmodel | while read line
 do
   DEVICE="$(echo $line | jq --raw-output '.model' | tr -s ' ' '_')" # replace ' ' with '_'
   DEVICEID="$(echo $line | jq --raw-output '.id' | tr -s ' ' '_')"
@@ -198,5 +203,5 @@ do
 
   # Create file with touch /tmp/rtl_433.log if logging is needed
   [ -w /tmp/rtl_433.log ] && echo $line >> rtl_433.log
-  echo $line | /usr/bin/mosquitto_pub -h $MQTT_HOST -u $MQTT_USER -P $MQTT_PASS -i RTL_433 -r -l -t $MQTT_PATH
+  echo $line | /usr/bin/mosquitto_pub -h $MQTT_HOST -p $MQTT_PORT --tls-version tlsv1.2 --cafile DST_Root_CA_X3.pem -V mqttv311 -u $MQTT_USER -P $MQTT_PASS -i RTL433 -l -t $MQTT_PATH
 done

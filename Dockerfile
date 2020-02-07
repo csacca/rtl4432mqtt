@@ -18,26 +18,26 @@ LABEL Description="This image is used to start a script that will monitor for RF
 # First install software packages needed to compile rtl_433 and to publish MQTT events
 #
 RUN apk add --no-cache --virtual build-deps alpine-sdk cmake git libusb-dev && \
-    mkdir /tmp/src && \
-    cd /tmp/src && \
-    git clone git://git.osmocom.org/rtl-sdr.git && \
-    mkdir /tmp/src/rtl-sdr/build && \
-    cd /tmp/src/rtl-sdr/build && \
-    cmake ../ -DINSTALL_UDEV_RULES=ON -DDETACH_KERNEL_DRIVER=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr/local && \
-    make && \
-    make install && \
-    chmod +s /usr/local/bin/rtl_* && \
-    cd /tmp/src/ && \
-    git clone https://github.com/merbanan/rtl_433 && \
-    cd rtl_433/ && \
-    mkdir build && \
-    cd build && \
-    cmake ../ && \
-    make && \
-    make install && \
-    apk del build-deps && \
-    rm -r /tmp/src && \
-    apk add --no-cache libusb mosquitto-clients jq
+  mkdir /tmp/src && \
+  cd /tmp/src && \
+  git clone git://git.osmocom.org/rtl-sdr.git && \
+  mkdir /tmp/src/rtl-sdr/build && \
+  cd /tmp/src/rtl-sdr/build && \
+  cmake ../ -DINSTALL_UDEV_RULES=ON -DDETACH_KERNEL_DRIVER=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr/local && \
+  make && \
+  make install && \
+  chmod +s /usr/local/bin/rtl_* && \
+  cd /tmp/src/ && \
+  git clone https://github.com/merbanan/rtl_433 && \
+  cd rtl_433/ && \
+  mkdir build && \
+  cd build && \
+  cmake ../ && \
+  make && \
+  make install && \
+  apk del build-deps && \
+  rm -r /tmp/src && \
+  apk add --no-cache libusb mosquitto-clients jq
 
 #
 # Define an environment variable
@@ -46,6 +46,6 @@ RUN apk add --no-cache --virtual build-deps alpine-sdk cmake git libusb-dev && \
 ENV MQTT_HOST="hassio.local"
 ENV MQTT_USER="guest"
 ENV MQTT_PASS="guest"
-ENV MQTT_TOPIC="homeassistant/sensor/rtl433"
+ENV MQTT_TOPIC="homeassistant/rtl433"
 
-CMD cd / && cp /config/rtl4332mqtt/rtl2mqtt.sh /rtl2mqtt.sh && chmod +x /rtl2mqtt.sh && /rtl2mqtt.sh
+CMD cd / && cp /config/rtl4332mqtt/rtl4432mqtt.sh /rtl4432mqtt.sh && chmod +x /rtl4432mqtt.sh && /rtl4432mqtt.sh
