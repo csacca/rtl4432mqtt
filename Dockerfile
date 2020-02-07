@@ -62,7 +62,7 @@ RUN cmake ../
 RUN make
 RUN make install
 
-RUN apk del build-dependencies
+RUN apk del .build-dependencies
 RUN rm -r /tmp/src
 
 #
