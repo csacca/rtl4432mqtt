@@ -76,5 +76,6 @@ ENV MQTT_PASS="guest"
 ENV MQTT_TOPIC="homeassistant/rtl433"
 
 COPY rtl4432mqtt.sh /
+COPY DST_Root_CA_X3.pem /
 RUN chmod +x /rtl4432mqtt.sh
 CMD ["/rtl4432mqtt.sh"]
