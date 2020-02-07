@@ -62,11 +62,12 @@ RUN cmake ../
 RUN make
 RUN make install
 
-RUN apk del .build-dependencies
+WORKDIR /
+RUN apk del --no-cache .build-dependencies
 RUN rm -r /tmp/src
 
 #
-# Define an environment variable
+# Define an environment variables
 #
 # Use this variable when creating a container to specify the MQTT broker host.
 ENV MQTT_HOST="hassio.local"
@@ -75,5 +76,5 @@ ENV MQTT_PASS="guest"
 ENV MQTT_TOPIC="homeassistant/rtl433"
 
 COPY rtl4432mqtt.sh /
-RUN chmod +x /rtl4332mqtt.sh
-CMD ["rtl4432mqtt.sh"]
+RUN chmod +x /rtl4432mqtt.sh
+CMD ["/rtl4432mqtt.sh"]
